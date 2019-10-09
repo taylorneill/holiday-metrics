@@ -47,6 +47,8 @@ let retrieveArtistStats = function () {
 
 var searchOutput = retrieveArtistStats();
 
+let searchArtistID 
+
 //do stuff
 
 //app.get('/', (req, res) => res.send(searchOutput))
