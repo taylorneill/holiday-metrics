@@ -2,7 +2,7 @@
   "name": "holiday-metrics",
   "version": "1.0.0",
   "description": "read json object from dynamodb based on request URL",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -21,6 +21,7 @@
   "homepage": "https://github.com/taylorneill/holiday-metrics#readme",
   "dependencies": {
     "aws-sdk": "2.543.0",
+    "express": "^4.17.1",
     "expressjs": "1.0.1"
   }
 }

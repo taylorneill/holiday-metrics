@@ -1,0 +1,19 @@
+{
+  "TableName": "ARTIST_DATA",
+  "KeySchema": [
+    {
+      "AttributeName": "ARTIST_UUID",
+      "KeyType": "HASH"
+    }
+  ],
+  "AttributeDefinitions": [
+    {
+      "AttributeName": "ARTIST_UUID",
+      "AttributeType": "S"
+    }
+  ],
+  "ProvisionedThroughput": {
+    "ReadCapacityUnits": 5,
+    "WriteCapacityUnits": 5
+  }
+}
