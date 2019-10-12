@@ -6,6 +6,9 @@ const port = 3000
 //searchKey test
 var searchKey = "123123124";
 
+//let searchKey = function () {
+
+//};
 
 // setup aws-sdk
 var AWS = require('aws-sdk');
@@ -55,7 +58,6 @@ var searchOutput = retrieveArtistStats();
 //app.get('/', (req, res) => res.send(searchOutput))
 
 app.get('/', function(req, res){
-    searchKey = req.query.id
     res.send('id: '+ req.query.id + ' \n\n\n' + searchOutput);
 });
 
