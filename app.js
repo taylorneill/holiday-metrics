@@ -13,9 +13,8 @@ var AWS = require('aws-sdk');
 
 let awsConfig = {
     "region" : "us-east-1",
-    "endpoint" :"https://dynamodb.us-east-1.amazonaws.com",
-//    "accessKeyID" : "AKIATEB32ECC6Q3WW24Z", 
-//    "secretAccessKey" : "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",
+    "endpoint" : "https://dynamodb.us-east-1.amazonaws.com",
+    output : "json",
 };
 
 
@@ -38,14 +37,14 @@ let retrieveArtistStats = function () {
             }
             else {
                // console.log("ARTIST_DATA::retrieveArtistStats::success - " + JSON.stringify(data, null, 2));
-              searchOutput = JSON.stringify(data,null,2);
+              return JSON.stringify(data,null,2);
              // console.log(data);
             }
         }
         );
 }
 
-var searchOutput = retrieveArtistStats();
+let searchOutput = retrieveArtistStats();
 
 //do stuff
 
