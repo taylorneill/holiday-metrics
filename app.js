@@ -43,14 +43,14 @@ let retrieveArtistStats = function () {
             }
             else {
                // console.log("ARTIST_DATA::retrieveArtistStats::success - " + JSON.stringify(data, null, 2));
-              searchOutput = JSON.stringify(data,null,2);
+              return JSON.stringify(data,null,2);
              // console.log(data);
             }
         }
         );
 }
 
-var searchOutput = retrieveArtistStats();
+let searchOutput = retrieveArtistStats();
 
 
 //do stuff
@@ -61,4 +61,4 @@ app.get('/', function(req, res){
     res.send('id: '+ req.query.id + ' \n\n\n' + searchOutput);
 });
 
-app.listen(port, () => console.log(`Example app listening on port ${port}!`))
+app.listen(port, () => console.log(`Example app listening on port ${port} and ${process.env.ACCESS_KEY_ID}!`))
