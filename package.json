@@ -21,7 +21,6 @@
   "homepage": "https://github.com/taylorneill/holiday-metrics#readme",
   "dependencies": {
     "aws-sdk": "2.543.0",
-    "express": "^4.17.1",
-    "expressjs": "1.0.1"
+    "express": "^4.17.1"
   }
 }

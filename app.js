@@ -61,4 +61,4 @@ app.get('/', function(req, res){
     res.send('id: '+ req.query.id + ' \n\n\n' + searchOutput);
 });
 
-app.listen(port, () => console.log(`Example app listening on port ${port}!`))
+app.listen(port, () => console.log(`Example app listening on port ${port} and ${process.env.ACCESS_KEY_ID}!`))
