@@ -3,6 +3,13 @@ const express = require('express')
 const app = express()
 const port = 3000
 
+//searchKey test
+var searchKey = "123123124";
+
+//let searchKey = function () {
+
+//};
+
 // setup aws-sdk
 var AWS = require('aws-sdk');
 //const config = require('config/config.js');
@@ -13,8 +20,7 @@ var AWS = require('aws-sdk');
 
 let awsConfig = {
     "region" : "us-east-1",
-    "endpoint" : "https://dynamodb.us-east-1.amazonaws.com",
-    output : "json",
+    "endpoint" :"https://dynamodb.us-east-1.amazonaws.com"
 };
 
 
@@ -27,7 +33,7 @@ let retrieveArtistStats = function () {
     var params = {
         TableName: "ARTIST_DATA",
         Key: {
-            "ARTIST_ID": "123123128"
+            "ARTIST_ID": searchKey
         }
     };
 
@@ -45,6 +51,7 @@ let retrieveArtistStats = function () {
 }
 
 let searchOutput = retrieveArtistStats();
+
 
 //do stuff
 
