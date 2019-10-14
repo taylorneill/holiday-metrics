@@ -2,9 +2,14 @@
 const express = require('express');
 
 const app = express();
-const port = 3000;
+const AWS = require('aws-sdk');
 const cors = require('cors');
 const csv = require('csv');
+
+const port = 3000;
+
+app.use(cors());
+
 
 // searchKey test
 const searchKey = '123123124';
@@ -14,7 +19,6 @@ const searchKey = '123123124';
 // };
 
 // setup aws-sdk
-const AWS = require('aws-sdk');
 // const config = require('config/config.js');
 // const isDev = process.env.NODE_END !== 'production';
 
@@ -32,34 +36,27 @@ AWS.config.update(awsConfig);
 // do stuff
 const docClient = new AWS.DynamoDB.DocumentClient();
 
-const retrieveArtistStats = () => {
-  const params = {
-    TableName: 'ARTIST_DATA',
-    Key: {
-      ARTIST_ID: searchKey,
-    },
-  };
-
-  docClient.get(params, (err, data) => {
-    if (err) {
-    //   console.log(`ARTIST_DATA::retrieveArtistStats::error - ${JSON.stringify(err, null, 2)}`);
-      return `ARTIST_DATA::retrieveArtistStats::error - ${JSON.stringify(err, null, 2)}`;
-    }
-    // console.log("ARTIST_DATA::retrieveArtistStats::success - " + JSON.stringify(data, null, 2));
-    return JSON.stringify(data, null, 2);
-    // console.log(data);
-  });
-};
-
-const searchOutput = retrieveArtistStats();
-
 
 // do stuff
 
-// app.get('/', (req, res) => res.send(searchOutput))
-
 app.get('/', (req, res) => {
-  res.send(`id: ${req.query.id} \n\n\n${searchOutput}`);
+  const { id } = req.query;
+  const params = {
+    TableName: 'ARTIST_DATA',
+    Key: {
+      ARTIST_ID: '' || id,
+    },
+  };
+
+  // eslint-disable-next-line consistent-return
+  docClient.get(params, (err, data) => {
+    if (err) {
+      res.json(err);
+    } else if (data) {
+      res.json(data);
+    }
+  });
 });
 
-app.listen(port, () => console.log(`Example app listening on port ${port} and ${process.env.ACCESS_KEY_ID}!`));
+// eslint-disable-next-line no-console
+app.listen(port, () => console.log(`Example app listening on port ${port}!`));
