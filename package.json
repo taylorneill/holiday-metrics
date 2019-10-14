@@ -20,9 +20,11 @@
   },
   "homepage": "https://github.com/taylorneill/holiday-metrics#readme",
   "dependencies": {
+    "async": "^3.1.0",
     "aws-sdk": "2.543.0",
     "cors": "^2.8.5",
     "csv": "^5.1.3",
+    "csv-parse": "^4.6.3",
     "dotenv": "^8.1.0",
     "express": "^4.17.1"
   },

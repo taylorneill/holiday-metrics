@@ -16,6 +16,7 @@ module.exports = {
 		'max-len': 'off',
 		'no-unused-vars': 'warn',
 		'no-else-return': 'off',
-		'consistent-return': 'warn'
+		'consistent-return': 'warn',
+		'no-param-reassign': 'warn'
 	}
 };

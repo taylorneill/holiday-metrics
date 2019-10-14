@@ -3,8 +3,10 @@ const express = require('express');
 const app = express();
 const AWS = require('aws-sdk');
 const cors = require('cors');
-const csv = require('csv');
+const parse = require('csv-parse');
 const dotenv = require('dotenv');
+const fs = require('fs');
+const async = require('async');
 
 dotenv.config();
 
@@ -16,7 +18,6 @@ app.use(express.json()); // for parsing application/json
 app.use(express.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
 
 // const isDev = process.env.NODE_ENV !== 'production';
-
 // setup aws-sdk
 const awsConfig = {
   endpoint: 'https://dynamodb.us-east-1.amazonaws.com',
@@ -28,6 +29,63 @@ const awsConfig = {
 AWS.config.update(awsConfig);
 
 const docClient = new AWS.DynamoDB.DocumentClient();
+
+const csvFilename = '/Users/andrelowy/Documents/Projects/holiday-metrics/test_data/test_data.csv';
+
+const rs = fs.createReadStream(csvFilename);
+
+const parser = parse({
+  columns: true,
+  delimiter: ',',
+}, (parseError, data) => {
+  if (parseError) {
+    console.log('**********', parseError, '**********');
+    return;
+  }
+
+
+  const chunkArray = [];
+  const size = 20;
+
+  while (data.length > 0) {
+    chunkArray.push(data.splice(0, size));
+  }
+  let dataImported = false;
+  let chunkNum = 1;
+
+  async.each(chunkArray, (itemData, callback) => {
+    const params = {
+      RequestItems: {},
+    };
+
+    params.RequestItems.ARTIST_DATA = [];
+    itemData.forEach((item) => {
+      Object.keys(item).forEach((key) => {
+        // An AttributeValue may not contain an empty string
+        if (item[key] === '') { delete item[key]; }
+      });
+    });
+
+    docClient.batchWrite(params, (err, res, cap) => {
+      console.log('done going next');
+      if (err == null) {
+        console.log(`Success chunk #${chunkNum}`);
+        dataImported = true;
+      } else {
+        console.log(err);
+        console.log(`Fail chunk #${chunkNum}`);
+        dataImported = false;
+      }
+      chunkNum += 1;
+      callback();
+    }, () => {
+    // run after loops
+      console.log('all data imported....');
+    });
+  });
+});
+
+rs.pipe(parser);
 
 
 // GET stats from dynamodb based on query param id
@@ -58,8 +116,8 @@ const getStatsById = (id) => {
 app.get('/', (req, res) => {
   const { id } = req.query;
   getStatsById(id)
-    .then((data) => res.json(data))
-    .catch((err) => res.json(err));
+    .then(({ Item }) => res.json(Item))
+    .catch(({ Item }) => res.json(Item));
 });
 
 // eslint-disable-next-line no-console
