@@ -10,41 +10,31 @@ const port = 3000;
 
 app.use(cors());
 
-
-// searchKey test
-const searchKey = '123123124';
-
-// let searchKey = function () {
-
-// };
-
-// setup aws-sdk
-// const config = require('config/config.js');
 // const isDev = process.env.NODE_END !== 'production';
 
-// read config.js
 
-
+// setup aws-sdk
 const awsConfig = {
   region: 'us-east-1',
   endpoint: 'https://dynamodb.us-east-1.amazonaws.com',
 };
 
-
 AWS.config.update(awsConfig);
 
-// do stuff
 const docClient = new AWS.DynamoDB.DocumentClient();
 
 
-// do stuff
+// GET stats from dynamodb based on query param id
+
+// Default id if no param given in url
+const searchKey = '123123124';
 
 app.get('/', (req, res) => {
   const { id } = req.query;
   const params = {
     TableName: 'ARTIST_DATA',
     Key: {
-      ARTIST_ID: '' || id,
+      ARTIST_ID: id || searchKey,
     },
   };
 
