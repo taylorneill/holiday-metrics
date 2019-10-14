@@ -1,4 +1,3 @@
-// setup express
 const express = require('express');
 
 const app = express();
@@ -16,13 +15,12 @@ app.use(cors());
 app.use(express.json()); // for parsing application/json
 app.use(express.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
 
-// const isDev = process.env.NODE_END !== 'production';
-
+// const isDev = process.env.NODE_ENV !== 'production';
 
 // setup aws-sdk
 const awsConfig = {
-  region: 'us-east-1',
   endpoint: 'https://dynamodb.us-east-1.amazonaws.com',
+  region: 'us-east-1',
   accessKeyId: process.env.ACCESS_KEY_ID,
   secretAccessKey: process.env.SECRET_ACCESS_KEY,
 };
@@ -37,8 +35,7 @@ const docClient = new AWS.DynamoDB.DocumentClient();
 // Default id if no param given in url
 const searchKey = '123123124';
 
-app.get('/', (req, res) => {
-  const { id } = req.query;
+const getStatsById = (id) => {
   const params = {
     TableName: 'ARTIST_DATA',
     Key: {
@@ -46,14 +43,23 @@ app.get('/', (req, res) => {
     },
   };
 
-  // eslint-disable-next-line consistent-return
-  docClient.get(params, (err, data) => {
-    if (err) {
-      res.json(err);
-    } else if (data) {
-      res.json(data);
+  const artistStats = new Promise((resolve, reject) => docClient.get(params, (err, data) => {
+    if (data) {
+      resolve(data);
+    } else if (err) {
+      reject(err);
     }
-  });
+  }));
+
+  return artistStats;
+};
+
+
+app.get('/', (req, res) => {
+  const { id } = req.query;
+  getStatsById(id)
+    .then((data) => res.json(data))
+    .catch((err) => res.json(err));
 });
 
 // eslint-disable-next-line no-console
