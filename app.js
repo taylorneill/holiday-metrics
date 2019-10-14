@@ -5,8 +5,12 @@ const app = express();
 const AWS = require('aws-sdk');
 const cors = require('cors');
 const csv = require('csv');
+const dotenv = require('dotenv');
 
-const port = 3000;
+dotenv.config();
+
+const port = process.env.PORT || 3000;
+
 
 app.use(cors());
 app.use(express.json()); // for parsing application/json
@@ -19,6 +23,8 @@ app.use(express.urlencoded({ extended: true })); // for parsing application/x-ww
 const awsConfig = {
   region: 'us-east-1',
   endpoint: 'https://dynamodb.us-east-1.amazonaws.com',
+  accessKeyId: process.env.ACCESS_KEY_ID,
+  secretAccessKey: process.env.SECRET_ACCESS_KEY,
 };
 
 AWS.config.update(awsConfig);
