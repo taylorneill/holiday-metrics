@@ -9,6 +9,8 @@ const csv = require('csv');
 const port = 3000;
 
 app.use(cors());
+app.use(express.json()); // for parsing application/json
+app.use(express.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
 
 // const isDev = process.env.NODE_END !== 'production';
 
