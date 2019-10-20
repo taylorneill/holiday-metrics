@@ -7,6 +7,7 @@ const parse = require('csv-parse');
 const dotenv = require('dotenv');
 const fs = require('fs');
 const async = require('async');
+const crypto = require('crypto');
 
 dotenv.config();
 
@@ -42,7 +43,19 @@ const parser = parse({
     console.log('**********', parseError, '**********');
     return;
   }
-
+  if (data) {
+    const cleanData = {};
+    Object.keys(data[0]).forEach((key) => {
+      if (key.includes(' ')) {
+        const newKey = key.replace(/\s/gi, '_');
+        cleanData[newKey] = data[0][key];
+      } else {
+        cleanData[key] = data[0][key];
+      }
+    });
+    console.log(JSON.stringify(cleanData));
+    return;
+  }
 
   const chunkArray = [];
   const size = 20;
@@ -64,7 +77,16 @@ const parser = parse({
         // An AttributeValue may not contain an empty string
         if (item[key] === '') { delete item[key]; }
       });
+
+      params.RequestItems.ARTIST_DATA.push({
+        PutRequest: {
+          Item: {
+            ...item,
+          },
+        },
+      });
     });
+
 
     docClient.batchWrite(params, (err, res, cap) => {
       console.log('done going next');
