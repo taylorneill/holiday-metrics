@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 const parse = require('csv-parse');
 const async = require('async');
 const crypto = require('crypto');
@@ -65,7 +66,7 @@ const importer = (docClient) => {
         });
       });
 
-      docClient.batchWrite(params, (err, res, cap) => {
+      docClient.batchWrite(params, (err) => {
         console.log('done going next');
         if (err == null) {
           console.log(`Success chunk #${chunkNum}`);
