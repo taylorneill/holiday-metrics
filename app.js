@@ -3,8 +3,9 @@ const express = require('express');
 const app = express();
 const AWS = require('aws-sdk');
 const cors = require('cors');
-const csv = require('csv');
 const dotenv = require('dotenv');
+const fs = require('fs');
+const { importer } = require('./utils/importer.js');
 
 dotenv.config();
 
@@ -16,7 +17,6 @@ app.use(express.json()); // for parsing application/json
 app.use(express.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
 
 // const isDev = process.env.NODE_ENV !== 'production';
-
 // setup aws-sdk
 const awsConfig = {
   endpoint: 'https://dynamodb.us-east-1.amazonaws.com',
@@ -28,6 +28,13 @@ const awsConfig = {
 AWS.config.update(awsConfig);
 
 const docClient = new AWS.DynamoDB.DocumentClient();
+
+const csvFilename = '/Users/andrelowy/Documents/Projects/holiday-metrics/test_data/test_data.csv';
+
+const rs = fs.createReadStream(csvFilename);
+
+
+rs.pipe(importer(docClient));
 
 
 // GET stats from dynamodb based on query param id
@@ -58,8 +65,8 @@ const getStatsById = (id) => {
 app.get('/', (req, res) => {
   const { id } = req.query;
   getStatsById(id)
-    .then((data) => res.json(data))
-    .catch((err) => res.json(err));
+    .then(({ Item }) => res.json(Item))
+    .catch(({ Item }) => res.json(Item));
 });
 
 // eslint-disable-next-line no-console
