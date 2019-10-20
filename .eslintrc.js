@@ -17,6 +17,7 @@ module.exports = {
 		'no-unused-vars': 'warn',
 		'no-else-return': 'off',
 		'consistent-return': 'warn',
-		'no-param-reassign': 'warn'
+		'no-param-reassign': 'warn',
+		'no-unreachable': 'warn'
 	}
 };

@@ -44,29 +44,32 @@ const parser = parse({
     return;
   }
 
-  const cleanData = {};
+  let cleanData = {};
   if (data) {
-    Object.keys(data[0]).forEach((key) => {
-      if (key.includes(' ')) {
-        const newKey = key.replace(/\s/gi, '_');
-        cleanData[newKey] = data[0][key];
-      } else {
-        cleanData[key] = data[0][key];
-      }
-    });
-    const hash = crypto.createHash('sha1').update(cleanData.GCDM_Artist_ID).digest('hex');
+    cleanData = data.map((datum) => {
+      const cleanDatum = {};
+      Object.keys(datum).forEach((key) => {
+        if (key.includes(' ')) {
+          const newKey = key.replace(/\s/gi, '_');
+          cleanDatum[newKey] = datum[key];
+        } else {
+          cleanDatum[key] = datum[key];
+        }
+      });
 
-    console.log({ [hash]: JSON.stringify(cleanData) });
-    return;
+      const hash = crypto.createHash('sha1').update(cleanDatum.GCDM_Artist_ID).digest('hex');
+
+      return { ARTIST_ID: hash, data: JSON.stringify(cleanDatum) };
+    });
   }
 
   const chunkArray = [];
   const size = 20;
 
-  while (data.length > 0) {
+  while (cleanData.length > 0) {
     chunkArray.push(cleanData.splice(0, size));
   }
-  let dataImported = false;
+
   let chunkNum = 1;
 
   async.each(chunkArray, (itemData, callback) => {
@@ -76,10 +79,13 @@ const parser = parse({
 
     params.RequestItems.ARTIST_DATA = [];
     itemData.forEach((item) => {
-      Object.keys(item).forEach((key) => {
-        // An AttributeValue may not contain an empty string
-        if (item[key] === '') { delete item[key]; }
-      });
+    // If uploading objects to ddb, an AttributeValue may not contain an empty string
+    //   Object.keys(item.data).forEach((key) => {
+    //     if (item.data[key] === '') {
+    //       item.data[key] = 'n/a';
+    //       console.log(item.data[key]);
+    //     }
+    //   });
 
       params.RequestItems.ARTIST_DATA.push({
         PutRequest: {
@@ -90,23 +96,21 @@ const parser = parse({
       });
     });
 
-
     docClient.batchWrite(params, (err, res, cap) => {
       console.log('done going next');
       if (err == null) {
         console.log(`Success chunk #${chunkNum}`);
-        dataImported = true;
+        chunkNum += 1;
+        callback();
       } else {
         console.log(err);
         console.log(`Fail chunk #${chunkNum}`);
-        dataImported = false;
+        console.log('Stopping....');
       }
-      chunkNum += 1;
-      callback();
-    }, () => {
-    // run after loops
-      console.log('all data imported....');
     });
+  }, () => {
+    // run after loops
+    console.log('All data imported!');
   });
 });
 
