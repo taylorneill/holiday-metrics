@@ -43,8 +43,9 @@ const parser = parse({
     console.log('**********', parseError, '**********');
     return;
   }
+
+  const cleanData = {};
   if (data) {
-    const cleanData = {};
     Object.keys(data[0]).forEach((key) => {
       if (key.includes(' ')) {
         const newKey = key.replace(/\s/gi, '_');
@@ -53,7 +54,9 @@ const parser = parse({
         cleanData[key] = data[0][key];
       }
     });
-    console.log(JSON.stringify(cleanData));
+    const hash = crypto.createHash('sha1').update(cleanData.GCDM_Artist_ID).digest('hex');
+
+    console.log({ [hash]: JSON.stringify(cleanData) });
     return;
   }
 
@@ -61,7 +64,7 @@ const parser = parse({
   const size = 20;
 
   while (data.length > 0) {
-    chunkArray.push(data.splice(0, size));
+    chunkArray.push(cleanData.splice(0, size));
   }
   let dataImported = false;
   let chunkNum = 1;
